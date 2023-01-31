@@ -1,0 +1,10 @@
+
+usage: startreactdjango projectName [options]
+  options:
+    -noapi, --noapi   Doesn't include api App
+    -mui, --mui       Includes Material MUI
+    -nov, --nov       No verbose
+  Create Django project with React
+
+usage: startreactdjango -help
+  Show help page
