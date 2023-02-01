@@ -358,7 +358,7 @@ if options["verbose"]:
 addToFile("urls.py", "from django.urls import path", "\n", ", include")
 newUrls = ['path("", include("frontend.urls"))']
 if options["api"]:
-    newUrls.append('path("api", include("api.urls"))')
+    newUrls.append('path("api/", include("api.urls"))')
 addToFile(
     "urls.py",
     "urlpatterns",
