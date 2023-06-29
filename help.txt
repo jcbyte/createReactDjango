@@ -1,6 +1,9 @@
 
 usage: startreactdjango projectName [options]
   options:
+    -novenv, --novenv Doesn't create virtual enviroment
+    -jwt, --jwt       Includes JWT token setup
+    -ts, --ts         Creates typescript App instead of javascript
     -noapi, --noapi   Doesn't include api App
     -mui, --mui       Includes Material MUI
     -nov, --nov       No verbose

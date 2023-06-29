@@ -80,7 +80,7 @@ options = {
     "api": not "noapi" in extraArgs,
     "mui": "mui" in extraArgs,
     "verbose": not "nov" in extraArgs,
-    "venv": not "novenv" in extraArgs,  # TODO
+    "venv": not "novenv" in extraArgs,
     "jwt": "jwt" in extraArgs,  # TODO
     "ts": "ts" in extraArgs,  # TODO
 }
@@ -101,8 +101,45 @@ def addToFile(file, startSearch, endSearch, extraContent):
 os.chdir(projLoc)
 
 cmdCLI(
+    os.mkdir,
+    projName,
+    verbose=options["verbose"],
+    before="Creating project folder ",
+    after=CLIColour("[DONE]\n", "green"),
+)
+os.chdir("./" + projName)
+
+pythonpath = "python "
+if options["venv"]:
+    cmdCLI(
+        sysCmdWheel,
+        "python -m venv " + os.getcwd(),
+        verbose=options["verbose"],
+        before="Creating venv ",
+        after=CLIColour("[DONE]\n", "green"),
+        wheel=options["verbose"],
+    )
+    pythonpath = os.getcwd() + "\\bin\\python "
+    cmdCLI(
+        shutil.copy,
+        templateFiles + "main\\requirements.txt",
+        "requirements.txt",
+        verbose=options["verbose"],
+        before="Creating " + CLIColour("requirements.txt ", "teal"),
+        after=CLIColour("[DONE]\n", "green"),
+    )
+    cmdCLI(
+        sysCmdWheel,
+        pythonpath + "-m pip install -r requirements.txt -qqq > nul",
+        verbose=options["verbose"],
+        before="Installing python packages ",
+        after=CLIColour("[DONE]\n", "green"),
+        wheel=options["verbose"],
+    )
+
+cmdCLI(
     sysCmdWheel,
-    "django-admin startproject " + projName,
+    pythonpath + "-m django startproject " + projName,
     verbose=options["verbose"],
     before="Creating Django Project ",
     after=CLIColour("[DONE]\n", "green"),
@@ -113,7 +150,7 @@ os.chdir("./" + projName)
 if options["api"]:
     cmdCLI(
         sysCmdWheel,
-        "python manage.py startapp api",
+        pythonpath + "manage.py startapp api",
         verbose=options["verbose"],
         before="Creating " + CLIColour("api", "teal") + " app ",
         after=CLIColour("[DONE]\n", "green"),
@@ -138,7 +175,7 @@ if options["api"]:
 
 cmdCLI(
     sysCmdWheel,
-    "python manage.py startapp frontend",
+    pythonpath + "manage.py startapp frontend",
     verbose=options["verbose"],
     before="Creating " + CLIColour("frontend", "teal") + " app ",
     after=CLIColour("[DONE]\n", "green"),
@@ -390,7 +427,7 @@ os.chdir("..")
 
 cmdCLI(
     sysCmdWheel,
-    "python manage.py makemigrations --verbosity 0 > nul",
+    pythonpath + "manage.py makemigrations --verbosity 0 > nul",
     verbose=options["verbose"],
     before="Creating database script ",
     after=CLIColour("[DONE]\n", "green"),
@@ -398,7 +435,7 @@ cmdCLI(
 )
 cmdCLI(
     sysCmdWheel,
-    "python manage.py migrate --verbosity 0 > nul",
+    pythonpath + "manage.py migrate --verbosity 0 > nul",
     verbose=options["verbose"],
     before="Creating database ",
     after=CLIColour("[DONE]\n", "green"),
