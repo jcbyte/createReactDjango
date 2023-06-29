@@ -82,7 +82,7 @@ options = {
     "verbose": not "nov" in extraArgs,
     "venv": not "novenv" in extraArgs,
     "jwt": "jwt" in extraArgs,  # TODO
-    "ts": "ts" in extraArgs,  # TODO
+    "ts": "ts" in extraArgs,
 }
 
 
@@ -109,6 +109,7 @@ cmdCLI(
 )
 os.chdir("./" + projName)
 
+# Setup virtual enviroment
 pythonpath = "python "
 if options["venv"]:
     cmdCLI(
@@ -147,6 +148,7 @@ cmdCLI(
 )
 os.chdir("./" + projName)
 
+# Create api app
 if options["api"]:
     cmdCLI(
         sysCmdWheel,
@@ -173,6 +175,7 @@ if options["api"]:
         after=CLIColour("[DONE]\n", "green"),
     )
 
+# Setup frontend app and react
 cmdCLI(
     sysCmdWheel,
     pythonpath + "manage.py startapp frontend",
@@ -182,7 +185,6 @@ cmdCLI(
     wheel=options["verbose"],
 )
 os.chdir("./frontend")
-
 cmdCLI(
     sysCmdWheel,
     "npm init -y > nul",
@@ -226,6 +228,16 @@ cmdCLI(
     after=CLIColour("[DONE]\n", "green"),
     wheel=options["verbose"],
 )
+if options["ts"]:
+    cmdCLI(
+        sysCmdWheel,
+        "npm i typescript @babel/preset-typescript --silent --no-progress > nul",
+        verbose=options["verbose"],
+        before="Installing "
+        + CLIColour("typescript @babel/preset-typescript ", "teal"),
+        after=CLIColour("[DONE]\n", "green"),
+        wheel=options["verbose"],
+    )
 
 if options["mui"]:
     cmdCLI(
@@ -247,7 +259,7 @@ if options["mui"]:
 
 cmdCLI(
     shutil.copy,
-    templateFiles + "main\\webpack.config.js",
+    templateFiles + "main\\" + ("ts" if options["ts"] else "js") + ".webpack.config.js",
     "webpack.config.js",
     verbose=options["verbose"],
     before="Configuring " + CLIColour("webpack.config.js ", "teal"),
@@ -319,15 +331,15 @@ cmdCLI(
 )
 cmdCLI(
     shutil.copy,
-    templateFiles + "frontend\\App.jsx",
-    "src\\components\\App.jsx",
+    templateFiles + "frontend\\App." + ("tsx" if options["ts"] else "jsx"),
+    "src\\components\\App." + ("tsx" if options["ts"] else "jsx"),
     verbose=options["verbose"],
     before="Creating frontend\\src\\components\\" + CLIColour("App.jsx ", "teal"),
     after=CLIColour("[DONE]\n", "green"),
 )
 cmdCLI(
     shutil.copy,
-    templateFiles + "frontend\\index.js",
+    templateFiles + "frontend\\" + ("ts" if options["ts"] else "js") + ".index.js",
     "src\\index.js",
     verbose=options["verbose"],
     before="Creating frontend\\src\\" + CLIColour("index.js ", "teal"),
@@ -375,6 +387,7 @@ cmdCLI(
     after=CLIColour("[DONE]\n", "green"),
 )
 
+# Finish up
 os.chdir("..\\" + projName)
 if options["verbose"]:
     sysWrite("Configuring " + CLIColour("urls.py ", "teal"))
