@@ -226,15 +226,6 @@ cmdCLI(
     after=CLIColour("[DONE]\n", "green"),
     wheel=options["verbose"],
 )
-cmdCLI(
-    sysCmdWheel,
-    "npm i @babel/plugin-proposal-class-properties --silent --no-progress > nul",
-    verbose=options["verbose"],
-    before="Installing "
-    + CLIColour("@babel/plugin-proposal-class-properties ", "teal"),
-    after=CLIColour("[DONE]\n", "green"),
-    wheel=options["verbose"],
-)
 
 if options["mui"]:
     cmdCLI(
@@ -254,14 +245,6 @@ if options["mui"]:
         wheel=options["verbose"],
     )
 
-cmdCLI(
-    shutil.copy,
-    templateFiles + "main\\babel.config.json",
-    "babel.config.json",
-    verbose=options["verbose"],
-    before="Configuring " + CLIColour("babel.config.json ", "teal"),
-    after=CLIColour("[DONE]\n", "green"),
-)
 cmdCLI(
     shutil.copy,
     templateFiles + "main\\webpack.config.js",
@@ -336,10 +319,10 @@ cmdCLI(
 )
 cmdCLI(
     shutil.copy,
-    templateFiles + "frontend\\App.js",
-    "src\\components\\App.js",
+    templateFiles + "frontend\\App.jsx",
+    "src\\components\\App.jsx",
     verbose=options["verbose"],
-    before="Creating frontend\\src\\components\\" + CLIColour("App.js ", "teal"),
+    before="Creating frontend\\src\\components\\" + CLIColour("App.jsx ", "teal"),
     after=CLIColour("[DONE]\n", "green"),
 )
 cmdCLI(
