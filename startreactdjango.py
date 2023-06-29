@@ -80,6 +80,9 @@ options = {
     "api": not "noapi" in extraArgs,
     "mui": "mui" in extraArgs,
     "verbose": not "nov" in extraArgs,
+    "venv": not "novenv" in extraArgs,  # TODO
+    "jwt": "jwt" in extraArgs,  # TODO
+    "ts": "ts" in extraArgs,  # TODO
 }
 
 
