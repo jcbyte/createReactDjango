@@ -258,7 +258,7 @@ if options["verbose"]:
 with open("package.json", "r") as f:
     data = json.loads(f.read().replace("\n", ""))
 data["scripts"] = {
-    "dev": "webpack --mode development --watch",
+    "dev": "webpack --mode development --watch --stats-error-details",
     "build": "webpack --mode production",
 }
 with open("package.json", "w") as f:
