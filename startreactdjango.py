@@ -77,12 +77,12 @@ templateFiles = thisPath + "templates\\"
 
 extraArgs = [arg.replace("-", "") for arg in sys.argv[3:]]
 options = {
+    "venv": not "novenv" in extraArgs,
+    "ts": "ts" in extraArgs,
     "api": not "noapi" in extraArgs,
     "mui": "mui" in extraArgs,
-    "verbose": not "nov" in extraArgs,
-    "venv": not "novenv" in extraArgs,
     "jwt": "jwt" in extraArgs,  # TODO
-    "ts": "ts" in extraArgs,
+    "verbose": not "nov" in extraArgs,
 }
 
 
