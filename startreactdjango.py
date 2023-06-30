@@ -493,7 +493,7 @@ if options["jwt"]:
 
 # Templates
 if options["template"]:
-    sysWrite("Creating api\\" + CLIColour("views.py ", "teal") + " template ")
+    sysWrite("Creating api\\" + CLIColour("views.py ", "teal") + "template ")
     appendText = ""
     with open(
         templateFiles
@@ -505,7 +505,7 @@ if options["template"]:
     with open("api\\views.py", "a") as f:
         f.write(appendSettings)
     sysWrite(CLIColour("[DONE]\n", "green"))
-    sysWrite("Creating api\\" + CLIColour("urls.py ", "teal") + " template ")
+    sysWrite("Creating api\\" + CLIColour("urls.py ", "teal") + "template ")
     addToFile(
         "api\\urls.py",
         "",
@@ -522,12 +522,11 @@ if options["template"]:
         + "App.tjsx",
         "frontend\\src\\components\\App." + ("tsx" if options["ts"] else "jsx"),
         verbose=options["verbose"],
-        before="Creating frontend\\src\\components\\App.tjsx "
-        + CLIColour("urls.py ", "teal")
+        before="Creating frontend\\src\\components\\"
+        + CLIColour("App.tjsx ", "teal")
         + "template ",
         after=CLIColour("[DONE]\n", "green"),
     )
-
 
 # Database
 cmdCLI(
