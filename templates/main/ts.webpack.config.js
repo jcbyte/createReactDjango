@@ -8,6 +8,9 @@ module.exports = (env, argv) => {
 			path: path.resolve(__dirname, "./static/frontend"),
 			filename: "[name].js",
 		},
+		resolve: {
+			extensions: [".js", ".jsx", ".ts", ".tsx"],
+		},
 		module: {
 			rules: [
 				{
