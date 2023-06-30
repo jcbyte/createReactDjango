@@ -522,7 +522,9 @@ if options["template"]:
         + "App.tjsx",
         "frontend\\src\\components\\App." + ("tsx" if options["ts"] else "jsx"),
         verbose=options["verbose"],
-        before="Creating api\\" + CLIColour("urls.py ", "teal"),
+        before="Creating frontend\\src\\components\\App.tjsx "
+        + CLIColour("urls.py ", "teal")
+        + "template ",
         after=CLIColour("[DONE]\n", "green"),
     )
 
