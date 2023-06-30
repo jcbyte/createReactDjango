@@ -2,11 +2,13 @@
 usage: startreactdjango projectName [options]
   options:
     -novenv, --novenv Doesn't create virtual enviroment
-    -ts, --ts         Creates typescript App instead of javascript    
-    -noapi, --noapi   Doesn't include api App
-    -mui, --mui       Includes Material MUI
-    -jwt, --jwt       Includes JWT token setup
-    -nov, --nov       No verbose
+    -ts, --ts                Creates typescript App instead of javascript    
+    -noapi, --noapi          Doesn't include api App
+    -cors, --cors            Enable CORS on the server
+    -mui, --mui              Includes Material MUI
+    -jwt, --jwt              Includes JWT token setup
+    -notemplate --notemplate Doesn't Create template files
+    -nov, --nov              No verbose
   Create Django project with React
 
 usage: startreactdjango -help

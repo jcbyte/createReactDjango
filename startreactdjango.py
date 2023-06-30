@@ -71,7 +71,7 @@ if sys.argv[2].replace("-", "") in ["help", "h"]:
 projLoc = sys.argv[1]
 projName = sys.argv[2]
 if os.path.exists(projLoc + "\\" + projName):
-    print(CLIColour("Project folder already exists", "red"))
+    sysWrite(CLIColour("Project folder already exists", "red"))
     exit()
 templateFiles = thisPath + "templates\\"
 
@@ -80,10 +80,15 @@ options = {
     "venv": not "novenv" in extraArgs,
     "ts": "ts" in extraArgs,
     "api": not "noapi" in extraArgs,
+    "cors": "cors" in extraArgs,
     "mui": "mui" in extraArgs,
-    "jwt": "jwt" in extraArgs,  # TODO
+    "jwt": "jwt" in extraArgs,
+    "template": not "notemplate" in extraArgs,
     "verbose": not "nov" in extraArgs,
 }
+if options["jwt"] and not options["api"]:
+    print(CLIColour("Cannot apply jwt to a project without an API", "red"))
+    exit()
 
 
 def addToFile(file, startSearch, endSearch, extraContent):
@@ -121,14 +126,15 @@ if options["venv"]:
         wheel=options["verbose"],
     )
     pythonpath = os.getcwd() + "\\bin\\python "
-    cmdCLI(
-        shutil.copy,
-        templateFiles + "main\\requirements.txt",
-        "requirements.txt",
-        verbose=options["verbose"],
-        before="Creating " + CLIColour("requirements.txt ", "teal"),
-        after=CLIColour("[DONE]\n", "green"),
-    )
+    sysWrite("Configuring " + CLIColour("requirements.txt ", "teal"))
+    with open(templateFiles + "main\\requirements.txt.json", "r") as templatereqf:
+        reqs = data = json.load(templatereqf)
+        with open("requirements.txt", "a") as reqf:
+            for option in reqs:
+                if option == "all" or options[option]:
+                    for req in reqs[option]:
+                        reqf.write(req + "\n")
+    sysWrite(CLIColour("[DONE]\n", "green"))
     cmdCLI(
         sysCmdWheel,
         pythonpath + "-m pip install -r requirements.txt -qqq > nul",
@@ -268,7 +274,7 @@ cmdCLI(
 if options["verbose"]:
     sysWrite("Configuring " + CLIColour("package.json ", "teal"))
 with open("package.json", "r") as f:
-    data = json.loads(f.read().replace("\n", ""))
+    data = json.load(f)
 data["scripts"] = {
     "dev": "webpack --mode development --watch --stats-error-details",
     "build": "webpack --mode production",
@@ -387,8 +393,10 @@ cmdCLI(
     after=CLIColour("[DONE]\n", "green"),
 )
 
+os.chdir("..")
+
 # Finish up
-os.chdir("..\\" + projName)
+os.chdir(projName)
 if options["verbose"]:
     sysWrite("Configuring " + CLIColour("urls.py ", "teal"))
 addToFile("urls.py", "from django.urls import path", "\n", ", include")
@@ -408,6 +416,10 @@ newSettings = ['"frontend.apps.FrontendConfig"']
 if options["api"]:
     newSettings.append('"rest_framework"')
     newSettings.append('"api.apps.ApiConfig"')
+if options["cors"]:
+    newSettings.append('"corsheaders"')
+if options["jwt"]:
+    newSettings.append('"rest_framework_simplejwt"')
 cmdCLI(
     addToFile,
     "settings.py",
@@ -415,12 +427,107 @@ cmdCLI(
     "]",
     "".join([("\t" + setting + ",\n") for setting in newSettings]),
     verbose=options["verbose"],
-    before="Configuring " + CLIColour("settings.py ", "teal"),
+    before="Configuring "
+    + CLIColour("settings.py ", "teal")
+    + CLIColour("INSTALLED_APPS ", "teal"),
     after=CLIColour("[DONE]\n", "green"),
 )
-
 os.chdir("..")
 
+# Extra options
+if options["cors"]:
+    cmdCLI(
+        addToFile,
+        projName + "\\settings.py",
+        "MIDDLEWARE",
+        "]",
+        "".join(
+            [
+                ("\t" + setting + ",\n")
+                for setting in [
+                    '"corsheaders.middleware.CorsMiddleware"',
+                    '"django.middleware.common.CommonMiddleware"',
+                ]
+            ]
+        ),
+        verbose=options["verbose"],
+        before="Configuring "
+        + CLIColour("settings.py ", "teal")
+        + CLIColour("MIDDLEWARE ", "teal"),
+        after=CLIColour("[DONE]\n", "green"),
+    )
+if options["jwt"]:
+    cmdCLI(
+        shutil.copy,
+        templateFiles + "api\\jwt\\models.py",
+        "api\\models.py",
+        verbose=options["verbose"],
+        before="Creating api\\" + CLIColour("models.py ", "teal"),
+        after=CLIColour("[DONE]\n", "green"),
+    )
+    cmdCLI(
+        shutil.copy,
+        templateFiles + "api\\jwt\\views.py",
+        "api\\views.py",
+        verbose=options["verbose"],
+        before="Creating api\\" + CLIColour("views.py ", "teal"),
+        after=CLIColour("[DONE]\n", "green"),
+    )
+    cmdCLI(
+        shutil.copy,
+        templateFiles + "api\\jwt\\urls.py",
+        "api\\urls.py",
+        verbose=options["verbose"],
+        before="Creating api\\" + CLIColour("urls.py ", "teal"),
+        after=CLIColour("[DONE]\n", "green"),
+    )
+    sysWrite(
+        "Configuring " + CLIColour("settings.py ", "teal") + CLIColour("JWT ", "teal")
+    )
+    appendSettings = ""
+    with open(templateFiles + "api\\jwt\\settings.py") as f:
+        appendSettings = f.read()
+    with open(projName + "\\settings.py", "a") as f:
+        f.write(appendSettings)
+    sysWrite(CLIColour("[DONE]\n", "green"))
+
+# Templates
+if options["template"]:
+    sysWrite("Creating api\\" + CLIColour("views.py ", "teal") + " template ")
+    appendText = ""
+    with open(
+        templateFiles
+        + "api\\templates\\"
+        + ("jwt." if options["jwt"] else "")
+        + "views.py"
+    ) as f:
+        appendSettings = f.read()
+    with open("api\\views.py", "a") as f:
+        f.write(appendSettings)
+    sysWrite(CLIColour("[DONE]\n", "green"))
+    sysWrite("Creating api\\" + CLIColour("urls.py ", "teal") + " template ")
+    addToFile(
+        "api\\urls.py",
+        "",
+        "urlpatterns",
+        "from .views import Foo\n\n",
+    ),
+    addToFile("api\\urls.py", "urlpatterns", "]", 'path("Foo", Foo.as_view())'),
+    sysWrite(CLIColour("[DONE]\n", "green"))
+    cmdCLI(
+        shutil.copy,
+        templateFiles
+        + "frontend\\templates\\"
+        + ("jwt." if options["jwt"] else "")
+        + "App.tjsx",
+        "frontend\\src\\components\\App." + ("tsx" if options["ts"] else "jsx"),
+        verbose=options["verbose"],
+        before="Creating api\\" + CLIColour("urls.py ", "teal"),
+        after=CLIColour("[DONE]\n", "green"),
+    )
+
+
+# Database
 cmdCLI(
     sysCmdWheel,
     pythonpath + "manage.py makemigrations --verbosity 0 > nul",
