@@ -11,16 +11,16 @@ def create_project(args):
 
     # If a folder already exists where we want to place our project then throw an error
     project_path = cmd_path / args.name
-    shutil.rmtree(project_path)  # ! THIS IS FOR TESTING AND SHOULD BE REMOVED
     if project_path.exists():
-        raise FileExistsError(f'A folder with name "{args.name}" already exists, at "{project_path}".')
+        shutil.rmtree(project_path)  # ! THIS IS FOR TESTING AND SHOULD BE REMOVED
+        # raise FileExistsError(f'A folder with name "{args.name}" already exists, at "{project_path}".')
 
     # Create folder for our project
     project_path.mkdir()
 
     # Create python environment
     subprocess.run(["python", "-m", "venv", project_path / args.env])
-    project_venv = project_path / args.env / "Scripts"
+    project_py = project_path / args.env / "Scripts" / "python"
 
     # Generate the requirements file
     with open(this_path / "python_requirements.json", "r") as f:
@@ -38,4 +38,7 @@ def create_project(args):
         f.write("\n".join(requirements_list))
 
     # Install the requirements
-    subprocess.run([project_venv / "pip", "install", "-r", project_path / "requirements.txt"])
+    subprocess.run([project_py, "-m", "pip", "install", "-r", project_path / "requirements.txt"])
+
+    # Create Django project
+    subprocess.run([project_py, "-m", "django", "startproject", args.name], cwd=project_path)
