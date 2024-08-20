@@ -42,3 +42,26 @@ def create_project(args):
 
     # Create Django project
     subprocess.run([project_py, "-m", "django", "startproject", args.name], cwd=project_path)
+    django_project_path = project_path / args.name
+
+    # Create the api django app
+    subprocess.run([project_py, "-m", "django", "startapp", "api"], cwd=django_project_path)
+
+    # TODO copy template files into this
+
+    # Create the frontend django app
+    subprocess.run([project_py, "-m", "django", "startapp", "frontend"], cwd=django_project_path)
+
+    # TODO setup react
+
+    # TODO copy react template files
+
+    # TODO copy frontend template files
+
+    # TODO configure django project
+
+    # TODO configure cors
+
+    # TODO configure jwt
+
+    # TODO initialise database
