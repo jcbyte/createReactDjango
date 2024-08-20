@@ -1,6 +1,12 @@
 import argparse
+import sys
 
 from .start_react_django import create_project
+
+
+def abort(message, exit_code=1):
+    print(f"Error: {message}")
+    sys.exit(exit_code)
 
 
 def entry():
@@ -28,4 +34,7 @@ def entry():
     args = parser.parse_args()
 
     # Create the project with arguments given
-    create_project(args)
+    try:
+        create_project(args)
+    except Exception as e:
+        abort(f"{e}")
