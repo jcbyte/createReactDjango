@@ -1,9 +1,12 @@
 import argparse
 
+from .start_react_django import create_project
+
 
 def entry():
     parser = argparse.ArgumentParser(description="Automate creation of django projects with react")
 
+    # Define arguments for CLI
     parser.add_argument("name", type=str, help="Name of the project")
     parser.add_argument(
         "-ts",
@@ -24,4 +27,5 @@ def entry():
 
     args = parser.parse_args()
 
-    print(args.name, args.typescript, args.cors, args.jwt)
+    # Create the project with arguments given
+    create_project(args)
