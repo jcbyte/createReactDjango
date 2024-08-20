@@ -13,7 +13,18 @@ def entry():
     parser = argparse.ArgumentParser(description="Automate creation of django projects with react")
 
     # Define arguments for CLI
-    parser.add_argument("name", type=str, help="Name of the project")
+    parser.add_argument(
+        "name",
+        type=str,
+        help="Name of the project",
+    )
+    parser.add_argument(
+        "-env",
+        type=str,
+        metavar="NAME",
+        default=".venv",
+        help="Specify the environment name",
+    )
     parser.add_argument(
         "-ts",
         "--typescript",
