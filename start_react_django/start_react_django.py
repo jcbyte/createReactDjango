@@ -20,6 +20,7 @@ def create_project(args):
 
     # Create python environment
     subprocess.run(["python", "-m", "venv", project_path / args.env])
+    project_venv = project_path / args.env / "Scripts"
 
     # Generate the requirements file
     with open(this_path / "python_requirements.json", "r") as f:
@@ -36,4 +37,5 @@ def create_project(args):
     with open(project_path / "requirements.txt", "w") as f:
         f.write("\n".join(requirements_list))
 
-    # TODO install requirements
+    # Install the requirements
+    subprocess.run([project_venv / "pip", "install", "-r", project_path / "requirements.txt"])
