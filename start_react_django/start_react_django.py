@@ -1,9 +1,12 @@
+import json
 import shutil
 import subprocess
 from pathlib import Path
 
 
 def create_project(args):
+
+    this_path = Path(__file__).resolve().parent
     cmd_path = Path.cwd()
 
     # If a folder already exists where we want to place our project then throw an error
@@ -15,5 +18,22 @@ def create_project(args):
     # Create folder for our project
     project_path.mkdir()
 
-    # Create python environmentthe virtual environment name could be an argument
+    # Create python environment
     subprocess.run(["python", "-m", "venv", project_path / args.env])
+
+    # Generate the requirements file
+    with open(this_path / "python_requirements.json", "r") as f:
+        requirements_data = json.load(f)
+
+    requirements_list = requirements_data["always"]
+
+    if args.cors:
+        requirements_list.extend(requirements_data["cors"])
+    if args.jwt:
+        requirements_list.extend(requirements_data["jwt"])
+
+    # Write to the requirements file in the new project
+    with open(project_path / "requirements.txt", "w") as f:
+        f.write("\n".join(requirements_list))
+
+    # TODO install requirements
