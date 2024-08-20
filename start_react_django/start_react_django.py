@@ -1,3 +1,4 @@
+import subprocess
 from pathlib import Path
 
 
@@ -11,3 +12,7 @@ def create_project(args):
 
     # Create folder for our project
     project_path.mkdir()
+
+    # Create python environment
+    # TODO the virtual environment name could be an argument
+    subprocess.run(["python", "-m", "venv", project_path / ".venv"])

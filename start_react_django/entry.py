@@ -37,4 +37,4 @@ def entry():
     try:
         create_project(args)
     except Exception as e:
-        abort(f"{e}")
+        abort(str(e))
