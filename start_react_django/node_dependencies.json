@@ -1,0 +1,14 @@
+{
+	"always": [
+		"webpack",
+		"webpack-cli",
+		"react",
+		"react-dom",
+		"react-router-dom",
+		"@babel/core",
+		"babel-loader",
+		"@babel/preset-env",
+		"@babel/preset-react"
+	],
+	"typescript": ["typescript", "@babel/preset-typescript"]
+}

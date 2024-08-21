@@ -19,10 +19,10 @@ def create_project(args):
     project_path.mkdir()
 
     # Create python environment
-    subprocess.run(["python", "-m", "venv", project_path / args.env])
+    subprocess.run(["python", "-m", "venv", project_path / args.env], check=True)
     project_py = project_path / args.env / "Scripts" / "python"
 
-    # Generate the requirements file
+    # Get the python requirements
     with open(this_path / "python_requirements.json", "r") as f:
         requirements_data = json.load(f)
 
@@ -38,31 +38,43 @@ def create_project(args):
         f.write("\n".join(requirements_list))
 
     # Install the requirements
-    subprocess.run([project_py, "-m", "pip", "install", "-r", project_path / "requirements.txt"])
+    subprocess.run([project_py, "-m", "pip", "install", "-r", project_path / "requirements.txt"], check=True)
 
     # Create Django project
-    subprocess.run([project_py, "-m", "django", "startproject", args.name], cwd=project_path)
+    subprocess.run([project_py, "-m", "django", "startproject", args.name], cwd=project_path, check=True)
     django_project_path = project_path / args.name
 
     # Create the api django app
-    subprocess.run([project_py, "-m", "django", "startapp", "api"], cwd=django_project_path)
+    subprocess.run([project_py, "-m", "django", "startapp", "api"], cwd=django_project_path, check=True)
 
-    # TODO copy template files into this
+    # TODO copy api template files
 
     # Create the frontend django app
-    subprocess.run([project_py, "-m", "django", "startapp", "frontend"], cwd=django_project_path)
+    subprocess.run([project_py, "-m", "django", "startapp", "frontend"], cwd=django_project_path, check=True)
+    frontend_app_path = django_project_path / "frontend"
 
-    # TODO setup react
+    # Initialise node in frontend
+    subprocess.run(["npm", "init", "-y"], cwd=frontend_app_path, shell=True, check=True)
 
-    # TODO copy react template files
+    # Get the node dependencies
+    with open(this_path / "node_dependencies.json", "r") as f:
+        dependencies_data = json.load(f)
+
+    dependencies_list = dependencies_data["always"]
+
+    if args.typescript:
+        dependencies_list.extend(dependencies_data["typescript"])
+
+    # Install these dependencies
+    subprocess.run(["npm", "install", *dependencies_list], cwd=frontend_app_path, shell=True, check=True)
 
     # TODO copy frontend template files
 
     # TODO configure django project
 
-    # TODO configure cors
+    # TODO configure cors (should this be done in api)
 
-    # TODO configure jwt
+    # TODO configure jwt (should this be done in api)
 
     # TODO initialise database
 
