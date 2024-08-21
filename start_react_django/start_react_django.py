@@ -65,3 +65,20 @@ def create_project(args):
     # TODO configure jwt
 
     # TODO initialise database
+
+
+if __name__ == "__main__":
+    import argparse
+
+    # When debugging, then emulate running the script with these args
+    create_project(
+        argparse.Namespace(
+            **{
+                "name": "testproj",
+                "cors": False,
+                "jwt": False,
+                "typescript": False,
+                "env": ".venv",
+            }
+        )
+    )
