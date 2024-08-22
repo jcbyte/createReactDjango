@@ -1,7 +1,7 @@
 import json
 
 
-class JSONContextManager:
+class JSONEditor:
     def __init__(self, filename):
         self.filename = filename
         self.data = None

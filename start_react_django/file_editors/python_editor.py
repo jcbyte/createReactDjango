@@ -3,7 +3,7 @@ import ast
 import astor
 
 
-class PythonContextManager:
+class PythonEditor:
     def __init__(self, filename):
         self.filename = filename
         self.tree = None
