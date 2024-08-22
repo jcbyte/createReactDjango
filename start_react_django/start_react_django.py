@@ -6,6 +6,8 @@ from pathlib import Path
 
 from json_context_manager import JSONContextManager
 
+# TODO some constants could be put in config / json files
+
 
 # Copy files from a folder into a new folder replacing any existing at the same path
 def copy_files(src: Path, dst: Path):
@@ -106,7 +108,21 @@ def create_project(args):
             "build": "webpack --mode production",
         }
 
-    # TODO Configure the django project
+    # Configure the django project
+    new_urls = ['path("", include("frontend.urls"))', 'path("api/", include("api.urls"))']
+    # TODO modify django_project_main_path / "urls.py"
+
+    new_settings = ['"frontend.apps.FrontendConfig"', '"rest_framework"', '"api.apps.ApiConfig"']
+    if args.cors:
+        new_settings.extend(['"corsheaders"'])
+    # TODO modify django_project_main_path / "settings.py"
+
+    new_middleware = []
+    if args.cors:
+        new_middleware.extend(
+            ['"corsheaders.middleware.CorsMiddleware"', '"django.middleware.common.CommonMiddleware"']
+        )
+    # TODO modify django_project_main_path / "settings.py"
 
     # Initialise database
     subprocess.run([project_py, "-m", "django", "makemigrations"], cwd=django_project_path, check=True)
