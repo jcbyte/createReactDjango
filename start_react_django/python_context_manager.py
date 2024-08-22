@@ -1,5 +1,4 @@
 import ast
-from pathlib import Path
 
 import astor
 
@@ -64,9 +63,3 @@ class PythonContextManager:
             array_node.value.elts.extend(new_values.elts)
         else:
             array_node.value = new_values
-
-
-this_path = Path(__file__).resolve().parent
-
-with PythonContextManager(this_path / "testdelme.py") as pcm:
-    pcm.modify_array("somearr", ['"hello"', '"world"'], False)

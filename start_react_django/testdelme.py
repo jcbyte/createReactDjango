@@ -1,1 +1,0 @@
-somearr = ['hello', 'world']
