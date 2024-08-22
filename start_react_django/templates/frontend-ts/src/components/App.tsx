@@ -1,8 +1,12 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
+
+interface IData {
+	text: string;
+	color: string;
+}
 
 export default function App() {
-	const [data, setData] = useState("Blank");
+	const [data, setData] = useState<IData>({ text: "Hello...", color: "#ffffff" });
 
 	function getFoo() {
 		fetch("/api/Foo", {
@@ -16,14 +20,20 @@ export default function App() {
 				}
 			})
 			.then((data) => {
-				setData(data.word);
+				setData(data as IData);
 			});
 	}
 	return (
 		<>
-			Hello React!
-			<br />
-			<button onClick={getFoo}>Data {data}</button>
+			<div style={{ padding: "20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
+				<div style={{ fontSize: "36px", color: data.color, transition: "100ms linear" }}>{data.text}</div>
+				<button style={{ minWidth: "120px", fontSize: "24px" }} onClick={getFoo}>
+					Get Foo!
+				</button>
+				<div style={{ fontSize: "12px", color: data.color, transition: "100ms linear" }}>
+					Made with create-react-django by Joel Cutler
+				</div>
+			</div>
 		</>
 	);
 }

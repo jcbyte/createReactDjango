@@ -33,5 +33,13 @@
 	"python_requirements": {
 		"always": ["Django", "djangorestframework"],
 		"cors": ["django-cors-headers"]
+	},
+	"frontend_files": {
+		"always": ["frontend"],
+		"typescript": ["frontend-ts"],
+		"no-typescript": ["frontend-js"]
+	},
+	"api_files": {
+		"always": ["api"]
 	}
 }

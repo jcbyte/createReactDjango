@@ -76,7 +76,11 @@ def create_project(args):
     django_api_app_path = django_project_path / "api"
 
     # Copy the template files into the API app
-    copy_files(templates_path / "api", django_api_app_path)
+    api_files_data = config_data["api_files"]
+    api_files_list = api_files_data["always"]
+
+    for api_files in api_files_list:
+        copy_files(templates_path / api_files, django_api_app_path)
 
     # Create the frontend django app
     subprocess.run([project_py, django_project_manage_script, "startapp", "frontend"], cwd=django_project_path, check=True)
@@ -95,10 +99,15 @@ def create_project(args):
     subprocess.run(["npm", "install", *dependencies_list], cwd=django_frontend_app_path, shell=True, check=True)
 
     # Copy the template files into the frontend app
-    copy_files(templates_path / "frontend", django_frontend_app_path)
-
+    frontend_files_data = config_data["frontend_files"]
+    frontend_files_list = frontend_files_data["always"]
     if args.typescript:
-        copy_files(templates_path / "frontend-ts", django_frontend_app_path)
+        frontend_files_list.extend(frontend_files_data["typescript"])
+    else:
+        frontend_files_list.extend(frontend_files_data["no-typescript"])
+
+    for frontend_files in frontend_files_list:
+        copy_files(templates_path / frontend_files, django_frontend_app_path)
 
     # Add the node CLI scripts
     scripts_data = config_data["node_scripts"]
