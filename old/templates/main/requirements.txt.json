@@ -1,6 +1,0 @@
-{
-	"all": ["Django"],
-	"api": ["djangorestframework"],
-	"cors": ["django-cors-headers"],
-	"jwt": ["djangorestframework_simplejwt"]
-}
