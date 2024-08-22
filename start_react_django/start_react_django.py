@@ -4,6 +4,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from json_context_manager import JSONContextManager
+
 
 # Copy files from a folder into a new folder replacing any existing at the same path
 def copy_files(src: Path, dst: Path):
@@ -108,8 +110,6 @@ def create_project(args):
 
 if __name__ == "__main__":
     import argparse
-
-    this_path = Path(__file__).resolve().parent
 
     # When debugging, then emulate running the script with these args
     create_project(
