@@ -35,6 +35,7 @@ def create_project(args):
 
     templates_path = this_path / "templates"
 
+    # Get config file for future processes
     with open(this_path / "config.json", "r") as f:
         config_data = json.load(f)
 
@@ -132,19 +133,3 @@ def create_project(args):
     # Initialise database
     subprocess.run([project_py, django_project_manage_script, "makemigrations"], cwd=django_project_path, check=True)
     subprocess.run([project_py, django_project_manage_script, "migrate"], cwd=django_project_path, check=True)
-
-
-if __name__ == "__main__":
-    import argparse
-
-    # When debugging, then emulate running the script with these args
-    create_project(
-        argparse.Namespace(
-            **{
-                "name": "testproj",
-                "cors": False,
-                "typescript": False,
-                "env": ".venv",
-            }
-        )
-    )
