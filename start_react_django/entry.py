@@ -36,11 +36,6 @@ def entry():
         action="store_true",
         help="Enable CORS on the server",
     )
-    parser.add_argument(
-        "-jwt",
-        action="store_true",
-        help="Includes JWT token setup",
-    )
 
     args = parser.parse_args()
 

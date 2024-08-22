@@ -47,7 +47,8 @@ def create_project(args):
     # Create the api django app
     subprocess.run([project_py, "-m", "django", "startapp", "api"], cwd=django_project_path, check=True)
 
-    # TODO copy api template files
+    # TODO copy api serializers into api
+    # TODO copy api urls into api
 
     # Create the frontend django app
     subprocess.run([project_py, "-m", "django", "startapp", "frontend"], cwd=django_project_path, check=True)
@@ -74,8 +75,6 @@ def create_project(args):
 
     # TODO configure cors (should this be done in api)
 
-    # TODO configure jwt (should this be done in api)
-
     # TODO initialise database
 
 
@@ -88,7 +87,6 @@ if __name__ == "__main__":
             **{
                 "name": "testproj",
                 "cors": False,
-                "jwt": False,
                 "typescript": False,
                 "env": ".venv",
             }
