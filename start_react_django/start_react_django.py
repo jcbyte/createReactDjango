@@ -4,10 +4,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from json_context_manager import JSONContextManager
-from python_context_manager import PythonContextManager
-
-# TODO some constants could be put in config / json files
+from start_react_django.json_editor import JSONEditor
+from start_react_django.python_editor import PythonEditor
 
 
 # Copy files from a folder into a new folder replacing any existing at the same path
@@ -35,6 +33,7 @@ def create_project(args):
     this_path = Path(__file__).resolve().parent
     cmd_path = Path.cwd()
 
+    config_path = this_path / "config"
     templates_path = this_path / "templates"
 
     # If a folder already exists where we want to place our project then throw an error
@@ -51,17 +50,17 @@ def create_project(args):
     project_py = project_path / args.env / "Scripts" / "python"
 
     # Get the python requirements
-    with open(this_path / "python_requirements.json", "r") as f:
+    with open(config_path / "python_requirements.json", "r") as f:
         requirements_data = json.load(f)
 
-    requirements_list = requirements_data["always"]
+    scripts_list = requirements_data["always"]
 
     if args.cors:
-        requirements_list.extend(requirements_data["cors"])
+        scripts_list.extend(requirements_data["cors"])
 
     # Write to the requirements file in the new project
     with open(project_path / "requirements.txt", "w") as f:
-        f.write("\n".join(requirements_list))
+        f.write("\n".join(scripts_list))
 
     # Install the requirements
     subprocess.run([project_py, "-m", "pip", "install", "-r", project_path / "requirements.txt"], check=True)
@@ -87,7 +86,7 @@ def create_project(args):
     subprocess.run(["npm", "init", "-y"], cwd=django_frontend_app_path, shell=True, check=True)
 
     # Get the node dependencies
-    with open(this_path / "node_dependencies.json", "r") as f:
+    with open(config_path / "node_dependencies.json", "r") as f:
         dependencies_data = json.load(f)
 
     dependencies_list = dependencies_data["always"]
@@ -104,30 +103,44 @@ def create_project(args):
     if args.typescript:
         copy_files(templates_path / "frontend-ts", django_frontend_app_path)
 
-    with JSONContextManager(django_frontend_app_path / "package.json") as package_data:
-        package_data["scripts"] = {
-            "dev": "webpack --mode development --watch --stats-error-details",
-            "build": "webpack --mode production",
-        }
+    # Add the node CLI scripts
+    with open(config_path / "node_scripts.json", "r") as f:
+        scripts_data = json.load(f)
+
+    scripts_list = scripts_data["always"]
+
+    with JSONEditor(django_frontend_app_path / "package.json") as package_data:
+        package_data["scripts"] = scripts_list
 
     # Configure the django project
-    new_urls = ['path("", include("frontend.urls"))', 'path("api/", include("api.urls"))']
+    with open(config_path / "django_urls.json", "r") as f:
+        urls_data = json.load(f)
 
-    with PythonContextManager(django_project_main_path / "urls.py") as pcm:
+    urls_list = urls_data["always"]
+
+    with PythonEditor(django_project_main_path / "urls.py") as pcm:
         pcm.add_code(["from django.urls import include"], end=False)
-        pcm.modify_array("urlpatterns", new_urls, extend=True)
+        pcm.modify_array("urlpatterns", urls_list, extend=True)
 
-    new_settings = ['"frontend.apps.FrontendConfig"', '"rest_framework"', '"api.apps.ApiConfig"']
+    with open(config_path / "django_settings.json", "r") as f:
+        settings_data = json.load(f)
+
+    settings_list = urls_data["always"]
+
     if args.cors:
-        new_settings.extend(['"corsheaders"'])
+        settings_list.extend(settings_data["cors"])
 
-    new_middleware = []
+    with open(config_path / "django_middleware.json", "r") as f:
+        middleware_data = json.load(f)
+
+    middleware_list = urls_data["always"]
+
     if args.cors:
-        new_middleware.extend(['"corsheaders.middleware.CorsMiddleware"', '"django.middleware.common.CommonMiddleware"'])
+        middleware_list.extend(middleware_data["cors"])
 
-    with PythonContextManager(django_project_main_path / "settings.py") as pcm:
-        pcm.modify_array("INSTALLED_APPS", new_settings, extend=True)
-        pcm.modify_array("MIDDLEWARE", new_middleware, extend=True)
+    with PythonEditor(django_project_main_path / "settings.py") as pcm:
+        pcm.modify_array("INSTALLED_APPS", settings_list, extend=True)
+        pcm.modify_array("MIDDLEWARE", middleware_list, extend=True)
 
     # Initialise database
     subprocess.run([project_py, django_project_manage_script, "makemigrations"], cwd=django_project_path, check=True)
