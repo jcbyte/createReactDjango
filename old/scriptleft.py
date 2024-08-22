@@ -57,23 +57,3 @@ if options["cors"]:
         before="Configuring " + CLIColour("settings.py ", "teal") + CLIColour("MIDDLEWARE ", "teal"),
         after=CLIColour("[DONE]\n", "green"),
     )
-
-# Database
-cmdCLI(
-    sysCmdWheel,
-    pythonpath + "manage.py makemigrations --verbosity 0 > nul",
-    verbose=options["verbose"],
-    before="Creating database script ",
-    after=CLIColour("[DONE]\n", "green"),
-    wheel=options["verbose"],
-)
-cmdCLI(
-    sysCmdWheel,
-    pythonpath + "manage.py migrate --verbosity 0 > nul",
-    verbose=options["verbose"],
-    before="Creating database ",
-    after=CLIColour("[DONE]\n", "green"),
-    wheel=options["verbose"],
-)
-
-sysWrite(CLIColour("\n Project " + projName + " Created\n", "green"))

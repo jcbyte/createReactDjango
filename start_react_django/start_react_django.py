@@ -108,7 +108,9 @@ def create_project(args):
 
     # TODO Configure the django project
 
-    # TODO Initialise database
+    # Initialise database
+    subprocess.run([project_py, "-m", "django", "makemigrations"], cwd=django_project_path, check=True)
+    subprocess.run([project_py, "-m", "django", "migrate"], cwd=django_project_path, check=True)
 
 
 if __name__ == "__main__":
