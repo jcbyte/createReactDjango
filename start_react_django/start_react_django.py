@@ -1,7 +1,28 @@
 import json
+import os
 import shutil
 import subprocess
 from pathlib import Path
+
+
+# Copy files from a folder into a new folder replacing any existing at the same path
+def copy_files(src: Path, dst: Path):
+    # Ensure the destination directory exists
+    if not dst.is_dir():
+        dst.mkdir()
+
+    # Iterate over all files and subdirectories in the source directory
+    for item in os.listdir(src):
+        src_path = src / item
+        dst_path = dst / item
+
+        # If it is a directory then copy this directory
+        if src_path.is_dir():
+            copy_files(src_path, dst_path)
+
+        # If it is a file then copy the file replacing the file if it already existed
+        else:
+            shutil.copy2(src_path, dst_path)
 
 
 def create_project(args):
@@ -80,6 +101,8 @@ def create_project(args):
 
 if __name__ == "__main__":
     import argparse
+
+    this_path = Path(__file__).resolve().parent
 
     # When debugging, then emulate running the script with these args
     create_project(
