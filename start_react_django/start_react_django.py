@@ -70,16 +70,17 @@ def create_project(args):
     subprocess.run([project_py, "-m", "django", "startproject", args.name], cwd=project_path, check=True)
     django_project_path = project_path / args.name
     django_project_main_path = django_project_path / args.name
+    django_project_manage_script = django_project_path / "manage.py"
 
     # Create the api django app
-    subprocess.run([project_py, "-m", "django", "startapp", "api"], cwd=django_project_path, check=True)
+    subprocess.run([project_py, django_project_manage_script, "startapp", "api"], cwd=django_project_path, check=True)
     django_api_app_path = django_project_path / "api"
 
     # Copy the template files into the API app
     copy_files(templates_path / "api", django_api_app_path)
 
     # Create the frontend django app
-    subprocess.run([project_py, "-m", "django", "startapp", "frontend"], cwd=django_project_path, check=True)
+    subprocess.run([project_py, django_project_manage_script, "startapp", "frontend"], cwd=django_project_path, check=True)
     django_frontend_app_path = django_project_path / "frontend"
 
     # Initialise node in frontend
@@ -122,17 +123,15 @@ def create_project(args):
 
     new_middleware = []
     if args.cors:
-        new_middleware.extend(
-            ['"corsheaders.middleware.CorsMiddleware"', '"django.middleware.common.CommonMiddleware"']
-        )
+        new_middleware.extend(['"corsheaders.middleware.CorsMiddleware"', '"django.middleware.common.CommonMiddleware"'])
 
     with PythonContextManager(django_project_main_path / "settings.py") as pcm:
         pcm.modify_array("INSTALLED_APPS", new_settings, extend=True)
         pcm.modify_array("MIDDLEWARE", new_middleware, extend=True)
 
     # Initialise database
-    # subprocess.run([project_py, "-m", "django", "makemigrations"], cwd=django_project_path, check=True)
-    # subprocess.run([project_py, "-m", "django", "migrate"], cwd=django_project_path, check=True)
+    subprocess.run([project_py, django_project_manage_script, "makemigrations"], cwd=django_project_path, check=True)
+    subprocess.run([project_py, django_project_manage_script, "migrate"], cwd=django_project_path, check=True)
 
 
 if __name__ == "__main__":
