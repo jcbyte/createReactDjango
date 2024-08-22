@@ -30,24 +30,29 @@ class PythonContextManager:
         # Propagate any exceptions
         return False
 
-    def modify_array(self, array_id, values, extend=False):
-        # Find the node with the given id
-        array_node = None
+    def _find_assign_node(self, id):
+        assign_node = None
         # Traverse the node tree
         for node in ast.walk(self.tree):
             # If a node is an assignment target
             if isinstance(node, ast.Assign):
                 # If this targets id matches what we are looking for
-                if any(isinstance(target, ast.Name) and target.id == array_id for target in node.targets):
-                    array_node = node
+                if any(isinstance(target, ast.Name) and target.id == id for target in node.targets):
+                    assign_node = node
                     break
 
         # Throw if no node with the specified id is found
-        if array_node is None:
-            raise ValueError(f'Could not find identifier "{array_id}" in the file.')
+        if assign_node is None:
+            raise ValueError(f'Could not find identifier "{id}" in the file.')
+
+        return assign_node
+
+    def modify_array(self, array_id, values, extend=False):
+        # Find the node with the given id
+        array_node = self._find_assign_node(array_id)
 
         # Throw if the node found is not a list
-        if not isinstance(node.value, ast.List):
+        if not isinstance(array_node.value, ast.List):
             raise ValueError(f'Identifier "{array_id}" is not an array.')
 
         # Parse new values into AST nodes
@@ -64,4 +69,4 @@ class PythonContextManager:
 this_path = Path(__file__).resolve().parent
 
 with PythonContextManager(this_path / "testdelme.py") as pcm:
-    pcm.modify_array("somearr", ['"hello"', '"world"'], True)
+    pcm.modify_array("somearr", ['"hello"', '"world"'], False)

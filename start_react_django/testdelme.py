@@ -1,1 +1,1 @@
-somearr = ['hello', 'world', 'hello', 'world']
+somearr = ['hello', 'world']
