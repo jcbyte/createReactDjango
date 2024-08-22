@@ -1,36 +1,6 @@
-import json
 import os
-import shutil
-import sys
 from threading import Event, Thread
 from time import sleep
-
-
-def addToFile(file, startSearch, endSearch, extraContent):
-    with open(file, "r") as f:
-        content = f.read()
-    startPart = content.find(startSearch)
-    endPart = len(content[:startPart]) + (content[startPart:]).find(endSearch)
-    newPart = content[startPart:endPart]
-    newPart += extraContent
-    newContent = content[:startPart] + newPart + content[endPart:]
-    with open(file, "w") as f:
-        f.write(newContent)
-
-
-# Setup frontend app and react
-if options["verbose"]:
-    sysWrite("Configuring " + CLIColour("package.json ", "teal"))
-with open("package.json", "r") as f:
-    data = json.load(f)
-data["scripts"] = {
-    "dev": "webpack --mode development --watch --stats-error-details",
-    "build": "webpack --mode production",
-}
-with open("package.json", "w") as f:
-    f.write(json.dumps(data))
-if options["verbose"]:
-    sysWrite(CLIColour("[DONE]\n", "green"))
 
 # Finish up
 os.chdir(projName)
@@ -85,33 +55,6 @@ if options["cors"]:
         ),
         verbose=options["verbose"],
         before="Configuring " + CLIColour("settings.py ", "teal") + CLIColour("MIDDLEWARE ", "teal"),
-        after=CLIColour("[DONE]\n", "green"),
-    )
-
-# Templates
-if options["template"]:
-    sysWrite("Creating api\\" + CLIColour("views.py ", "teal") + "template ")
-    appendText = ""
-    with open(templateFiles + "api\\templates\\" + ("jwt." if options["jwt"] else "") + "views.py") as f:
-        appendSettings = f.read()
-    with open("api\\views.py", "a") as f:
-        f.write(appendSettings)
-    sysWrite(CLIColour("[DONE]\n", "green"))
-    sysWrite("Creating api\\" + CLIColour("urls.py ", "teal") + "template ")
-    addToFile(
-        "api\\urls.py",
-        "",
-        "urlpatterns",
-        "from .views import Foo\n\n",
-    ),
-    addToFile("api\\urls.py", "urlpatterns", "]", 'path("Foo", Foo.as_view())'),
-    sysWrite(CLIColour("[DONE]\n", "green"))
-    cmdCLI(
-        shutil.copy,
-        templateFiles + "frontend\\templates\\" + ("jwt." if options["jwt"] else "") + "App.tjsx",
-        "frontend\\src\\components\\App." + ("tsx" if options["ts"] else "jsx"),
-        verbose=options["verbose"],
-        before="Creating frontend\\src\\components\\" + CLIColour("App.tjsx ", "teal") + "template ",
         after=CLIColour("[DONE]\n", "green"),
     )
 

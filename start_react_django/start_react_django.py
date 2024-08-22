@@ -66,6 +66,7 @@ def create_project(args):
     # Create Django project
     subprocess.run([project_py, "-m", "django", "startproject", args.name], cwd=project_path, check=True)
     django_project_path = project_path / args.name
+    django_project_main_path = django_project_path / args.name
 
     # Create the api django app
     subprocess.run([project_py, "-m", "django", "startapp", "api"], cwd=django_project_path, check=True)
@@ -99,13 +100,15 @@ def create_project(args):
     if args.typescript:
         copy_files(templates_path / "frontend-ts", django_frontend_app_path)
 
-    # TODO modify npm run scripts
+    with JSONContextManager(django_frontend_app_path / "package.json") as package_data:
+        package_data["scripts"] = {
+            "dev": "webpack --mode development --watch --stats-error-details",
+            "build": "webpack --mode production",
+        }
 
-    # TODO configure django project
+    # TODO Configure the django project
 
-    # TODO configure cors (should this be done in api)
-
-    # TODO initialise database
+    # TODO Initialise database
 
 
 if __name__ == "__main__":
