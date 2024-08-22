@@ -63,3 +63,11 @@ class PythonContextManager:
             array_node.value.elts.extend(new_values.elts)
         else:
             array_node.value = new_values
+
+    def add_code(self, code, end=True):
+        # Parse code lines into AST nodes
+        new_code_lines_nodes = [ast.parse(line).body for line in code]
+        new_code_nodes = [node for line_nodes in new_code_lines_nodes for node in line_nodes]
+
+        # Add these nodes into the tree body at the top or bottom
+        self.tree.body = self.tree.body + new_code_nodes if end else new_code_nodes + self.tree.body
