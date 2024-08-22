@@ -53,8 +53,6 @@ def create_project(args):
 
     if args.cors:
         requirements_list.extend(requirements_data["cors"])
-    if args.jwt:
-        requirements_list.extend(requirements_data["jwt"])
 
     # Write to the requirements file in the new project
     with open(project_path / "requirements.txt", "w") as f:
@@ -95,6 +93,9 @@ def create_project(args):
 
     # Copy the template files into the frontend app
     copy_files(templates_path / "frontend", django_frontend_app_path)
+
+    if args.typescript:
+        copy_files(templates_path / "frontend-ts", django_frontend_app_path)
 
     # TODO modify npm run scripts
 
