@@ -1,4 +1,0 @@
-{
-	"always": ["\"frontend.apps.FrontendConfig\"", "\"rest_framework\"", "\"api.apps.ApiConfig\""],
-	"cors": ["\"corsheaders\""]
-}

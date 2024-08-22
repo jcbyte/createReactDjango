@@ -1,0 +1,37 @@
+{
+	"django_middleware": {
+		"always": [],
+		"cors": ["\"corsheaders.middleware.CorsMiddleware\"", "\"django.middleware.common.CommonMiddleware\""]
+	},
+	"django_settings": {
+		"always": ["\"frontend.apps.FrontendConfig\"", "\"rest_framework\"", "\"api.apps.ApiConfig\""],
+		"cors": ["\"corsheaders\""]
+	},
+	"django_urls": {
+		"always": ["path(\"\", include(\"frontend.urls\"))", "path(\"api/\", include(\"api.urls\"))"]
+	},
+	"node_dependencies": {
+		"always": [
+			"webpack",
+			"webpack-cli",
+			"react",
+			"react-dom",
+			"react-router-dom",
+			"@babel/core",
+			"babel-loader",
+			"@babel/preset-env",
+			"@babel/preset-react"
+		],
+		"typescript": ["typescript", "@babel/preset-typescript"]
+	},
+	"node_scripts": {
+		"always": {
+			"dev": "webpack --mode development --watch --stats-error-details",
+			"build": "webpack --mode production"
+		}
+	},
+	"python_requirements": {
+		"always": ["Django", "djangorestframework"],
+		"cors": ["django-cors-headers"]
+	}
+}

@@ -1,4 +1,0 @@
-{
-	"always": [],
-	"cors": ["\"corsheaders.middleware.CorsMiddleware\"", "\"django.middleware.common.CommonMiddleware\""]
-}

@@ -4,8 +4,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from start_react_django.json_editor import JSONEditor
-from start_react_django.python_editor import PythonEditor
+from start_react_django.file_editors.json_editor import JSONEditor
+from start_react_django.file_editors.python_editor import PythonEditor
 
 
 # Copy files from a folder into a new folder replacing any existing at the same path
@@ -33,8 +33,10 @@ def create_project(args):
     this_path = Path(__file__).resolve().parent
     cmd_path = Path.cwd()
 
-    config_path = this_path / "config"
     templates_path = this_path / "templates"
+
+    with open(this_path / "config.json", "r") as f:
+        config_data = json.load(f)
 
     # If a folder already exists where we want to place our project then throw an error
     project_path = cmd_path / args.name
@@ -50,11 +52,8 @@ def create_project(args):
     project_py = project_path / args.env / "Scripts" / "python"
 
     # Get the python requirements
-    with open(config_path / "python_requirements.json", "r") as f:
-        requirements_data = json.load(f)
-
+    requirements_data = config_data["python_requirements"]
     scripts_list = requirements_data["always"]
-
     if args.cors:
         scripts_list.extend(requirements_data["cors"])
 
@@ -86,11 +85,8 @@ def create_project(args):
     subprocess.run(["npm", "init", "-y"], cwd=django_frontend_app_path, shell=True, check=True)
 
     # Get the node dependencies
-    with open(config_path / "node_dependencies.json", "r") as f:
-        dependencies_data = json.load(f)
-
+    dependencies_data = config_data["node_dependencies"]
     dependencies_list = dependencies_data["always"]
-
     if args.typescript:
         dependencies_list.extend(dependencies_data["typescript"])
 
@@ -104,37 +100,28 @@ def create_project(args):
         copy_files(templates_path / "frontend-ts", django_frontend_app_path)
 
     # Add the node CLI scripts
-    with open(config_path / "node_scripts.json", "r") as f:
-        scripts_data = json.load(f)
-
+    scripts_data = config_data["node_scripts"]
     scripts_list = scripts_data["always"]
 
     with JSONEditor(django_frontend_app_path / "package.json") as package_data:
         package_data["scripts"] = scripts_list
 
-    # Configure the django project
-    with open(config_path / "django_urls.json", "r") as f:
-        urls_data = json.load(f)
-
+    # Configure the django project urls
+    urls_data = config_data["django_urls"]
     urls_list = urls_data["always"]
 
     with PythonEditor(django_project_main_path / "urls.py") as pcm:
         pcm.add_code(["from django.urls import include"], end=False)
         pcm.modify_array("urlpatterns", urls_list, extend=True)
 
-    with open(config_path / "django_settings.json", "r") as f:
-        settings_data = json.load(f)
-
-    settings_list = urls_data["always"]
-
+    # Configure the django project settings
+    settings_data = config_data["django_settings"]
+    settings_list = settings_data["always"]
     if args.cors:
         settings_list.extend(settings_data["cors"])
 
-    with open(config_path / "django_middleware.json", "r") as f:
-        middleware_data = json.load(f)
-
-    middleware_list = urls_data["always"]
-
+    middleware_data = config_data["django_middleware"]
+    middleware_list = middleware_data["always"]
     if args.cors:
         middleware_list.extend(middleware_data["cors"])
 
