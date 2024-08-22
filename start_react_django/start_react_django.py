@@ -68,8 +68,8 @@ def create_project(args):
     # Create the api django app
     subprocess.run([project_py, "-m", "django", "startapp", "api"], cwd=django_project_path, check=True)
 
-    # TODO copy api serializers into api
-    # TODO copy api urls into api
+    # Copy the template files into the API app
+    copy_files(this_path / "templates" / "api", django_project_path / "api")
 
     # Create the frontend django app
     subprocess.run([project_py, "-m", "django", "startapp", "frontend"], cwd=django_project_path, check=True)
@@ -89,6 +89,8 @@ def create_project(args):
 
     # Install these dependencies
     subprocess.run(["npm", "install", *dependencies_list], cwd=frontend_app_path, shell=True, check=True)
+
+    # Copy the template files into the frontend app
 
     # TODO copy frontend template files
 
