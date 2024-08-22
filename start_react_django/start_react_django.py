@@ -5,6 +5,7 @@ import subprocess
 from pathlib import Path
 
 from json_context_manager import JSONContextManager
+from python_context_manager import PythonContextManager
 
 # TODO some constants could be put in config / json files
 
@@ -110,23 +111,28 @@ def create_project(args):
 
     # Configure the django project
     new_urls = ['path("", include("frontend.urls"))', 'path("api/", include("api.urls"))']
-    # TODO modify django_project_main_path / "urls.py"
+
+    with PythonContextManager(django_project_main_path / "urls.py") as pcm:
+        pcm.add_code(["from django.urls import include"], end=False)
+        pcm.modify_array("urlpatterns", new_urls, extend=True)
 
     new_settings = ['"frontend.apps.FrontendConfig"', '"rest_framework"', '"api.apps.ApiConfig"']
     if args.cors:
         new_settings.extend(['"corsheaders"'])
-    # TODO modify django_project_main_path / "settings.py"
 
     new_middleware = []
     if args.cors:
         new_middleware.extend(
             ['"corsheaders.middleware.CorsMiddleware"', '"django.middleware.common.CommonMiddleware"']
         )
-    # TODO modify django_project_main_path / "settings.py"
+
+    with PythonContextManager(django_project_main_path / "settings.py") as pcm:
+        pcm.modify_array("INSTALLED_APPS", new_settings, extend=True)
+        pcm.modify_array("MIDDLEWARE", new_middleware, extend=True)
 
     # Initialise database
-    subprocess.run([project_py, "-m", "django", "makemigrations"], cwd=django_project_path, check=True)
-    subprocess.run([project_py, "-m", "django", "migrate"], cwd=django_project_path, check=True)
+    # subprocess.run([project_py, "-m", "django", "makemigrations"], cwd=django_project_path, check=True)
+    # subprocess.run([project_py, "-m", "django", "migrate"], cwd=django_project_path, check=True)
 
 
 if __name__ == "__main__":
