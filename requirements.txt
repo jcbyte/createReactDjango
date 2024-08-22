@@ -1,0 +1,2 @@
+astor==0.8.1
+-e git+https://github.com/jcbyte/start-react-django.git@22d8b3ef40ff45c3109dd3aeaf9b5b41508c598f#egg=start_react_django
