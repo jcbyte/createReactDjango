@@ -30,6 +30,8 @@ def create_project(args):
     this_path = Path(__file__).resolve().parent
     cmd_path = Path.cwd()
 
+    templates_path = this_path / "templates"
+
     # If a folder already exists where we want to place our project then throw an error
     project_path = cmd_path / args.name
     if project_path.exists():
@@ -67,16 +69,17 @@ def create_project(args):
 
     # Create the api django app
     subprocess.run([project_py, "-m", "django", "startapp", "api"], cwd=django_project_path, check=True)
+    django_api_app_path = django_project_path / "api"
 
     # Copy the template files into the API app
-    copy_files(this_path / "templates" / "api", django_project_path / "api")
+    copy_files(templates_path / "api", django_api_app_path)
 
     # Create the frontend django app
     subprocess.run([project_py, "-m", "django", "startapp", "frontend"], cwd=django_project_path, check=True)
-    frontend_app_path = django_project_path / "frontend"
+    django_frontend_app_path = django_project_path / "frontend"
 
     # Initialise node in frontend
-    subprocess.run(["npm", "init", "-y"], cwd=frontend_app_path, shell=True, check=True)
+    subprocess.run(["npm", "init", "-y"], cwd=django_frontend_app_path, shell=True, check=True)
 
     # Get the node dependencies
     with open(this_path / "node_dependencies.json", "r") as f:
@@ -88,11 +91,12 @@ def create_project(args):
         dependencies_list.extend(dependencies_data["typescript"])
 
     # Install these dependencies
-    subprocess.run(["npm", "install", *dependencies_list], cwd=frontend_app_path, shell=True, check=True)
+    subprocess.run(["npm", "install", *dependencies_list], cwd=django_frontend_app_path, shell=True, check=True)
 
     # Copy the template files into the frontend app
+    copy_files(templates_path / "frontend", django_frontend_app_path)
 
-    # TODO copy frontend template files
+    # TODO modify npm run scripts
 
     # TODO configure django project
 

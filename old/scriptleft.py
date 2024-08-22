@@ -46,14 +46,6 @@ if options["api"]:
     )
 
 # Setup frontend app and react
-cmdCLI(
-    shutil.copy,
-    templateFiles + "main\\" + ("ts" if options["ts"] else "js") + ".webpack.config.js",
-    "webpack.config.js",
-    verbose=options["verbose"],
-    before="Configuring " + CLIColour("webpack.config.js ", "teal"),
-    after=CLIColour("[DONE]\n", "green"),
-)
 if options["verbose"]:
     sysWrite("Configuring " + CLIColour("package.json ", "teal"))
 with open("package.json", "r") as f:
