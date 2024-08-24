@@ -1,0 +1,2 @@
+include start_react_django/config.json
+recursive-include start_react_django/templates *

@@ -13,5 +13,5 @@ setup(
     entry_points={
         "console_scripts": ["start-react-django=start_react_django.entry:entry"],
     },
-    install_requires=[],
+    install_requires=["astor"],
 )
