@@ -8,6 +8,7 @@ setup(
     description="Automate creation of django projects with react",
     author="Joel Cutler",
     packages=find_packages(),
+    include_package_data=True,
     entry_points={
         "console_scripts": ["start-react-django=start_react_django.entry:entry"],
     },
