@@ -1,15 +1,13 @@
 # TODO This should be upgraded to a toml
 
-from distutils.core import setup
-
-import setuptools
+from setuptools import find_packages, setup
 
 setup(
     name="start-react-django",
     version="0.1.0",
     description="Automate creation of django projects with react",
     author="Joel Cutler",
-    packages=["start_react_django"],
+    packages=find_packages(),
     entry_points={
         "console_scripts": ["start-react-django=start_react_django.entry:entry"],
     },
