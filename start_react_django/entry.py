@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-from .start_react_django import create_project
+from start_react_django.start_react_django import create_project
 
 
 def abort(message, exit_code=1):
